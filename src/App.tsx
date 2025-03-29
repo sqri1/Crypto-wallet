@@ -55,11 +55,9 @@ function App() {
   }, []);
 
   const handleTokenChange = (token: string, value: string) => {
-    setTokens((prev) => ({ ...prev, [token]: value }));
-  };
-
-  const saveToLocalStorage = () => {
-    localStorage.setItem("tokens", JSON.stringify(tokens));
+    const newTokens = { ...tokens, [token]: value };
+    setTokens(newTokens);
+    localStorage.setItem("tokens", JSON.stringify(newTokens));
   };
 
   const removeToken = (tokenToRemove: string) => {
@@ -83,83 +81,79 @@ function App() {
   };
 
   return (
-    <>
-      <div className="container">
-        <div className="container__title">
-          <img src={myImage} alt="" className="container__image" />
-        </div>
-        <ModalWindow
-          prices={prices}
-          tokens={tokens}
-          onTokenChange={handleTokenChange}
-          onSave={saveToLocalStorage}
-        />
-        <div className="container__table-active-token">
-          <table className="container__table">
-            <thead>
-              <tr className="head-table">
-                <th>Актив</th>
-                <th>Количество</th>
-                <th>Цена</th>
-                <th>Общая стоимость</th>
-                <th>Изм. за 24ч.</th>
-                <th>% портфеля</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(tokens).map(([key, val]) => (
-                <tr
-                  key={key}
-                  onClick={() => removeToken(key)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <td>{key}</td>
-                  <td>{val}</td>
-                  <td>{parseFloat(prices[key] || "0").toFixed(2)}</td>
-                  <td>
-                    {(
-                      parseFloat(tokens[key]) * parseFloat(prices[key] || "0")
-                    ).toFixed(2)}
-                  </td>
-                  <td>
-                    {changeToken[key] ? (
-                      <>
-                        <div
-                          className={
-                            parseFloat(changeToken[key].priceChange) >= 0
-                              ? "positive-change"
-                              : "negative-change"
-                          }
-                        >
-                          {parseFloat(changeToken[key].priceChange).toFixed(2)}{" "}
-                          $
-                        </div>
-                        <div
-                          className={
-                            parseFloat(changeToken[key].priceChangePercent) >= 0
-                              ? "positive-change"
-                              : "negative-change"
-                          }
-                        >
-                          (
-                          {parseFloat(
-                            changeToken[key].priceChangePercent
-                          ).toFixed(2)}
-                          %)
-                        </div>
-                      </>
-                    ) : (
-                      "Загрузка..."
-                    )}
-                  </td>
-                  <td>{calculatePortfolioPercentage(key)}%</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+    <div className="container">
+      <div className="container__title">
+        <img src={myImage} alt="" className="container__image" />
       </div>
-    </>
+      <ModalWindow
+        prices={prices}
+        tokens={tokens}
+        onTokenChange={handleTokenChange}
+      />
+      <div className="container__table-active-token">
+        <table className="container__table">
+          <thead>
+            <tr className="head-table">
+              <th>Актив</th>
+              <th>Количество</th>
+              <th>Цена</th>
+              <th>Общая стоимость</th>
+              <th>Изм. за 24ч.</th>
+              <th>% портфеля</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(tokens).map(([key, val]) => (
+              <tr
+                key={key}
+                onClick={() => removeToken(key)}
+                style={{ cursor: "pointer" }}
+              >
+                <td>{key}</td>
+                <td>{val}</td>
+                <td>{parseFloat(prices[key] || "0").toFixed(2)}</td>
+                <td>
+                  {(
+                    parseFloat(tokens[key]) * parseFloat(prices[key] || "0")
+                  ).toFixed(2)}
+                </td>
+                <td>
+                  {changeToken[key] ? (
+                    <>
+                      <div
+                        className={
+                          parseFloat(changeToken[key].priceChange) >= 0
+                            ? "positive-change"
+                            : "negative-change"
+                        }
+                      >
+                        {parseFloat(changeToken[key].priceChange).toFixed(2)} $
+                      </div>
+                      <div
+                        className={
+                          parseFloat(changeToken[key].priceChangePercent) >= 0
+                            ? "positive-change"
+                            : "negative-change"
+                        }
+                      >
+                        (
+                        {parseFloat(
+                          changeToken[key].priceChangePercent
+                        ).toFixed(2)}
+                        %)
+                      </div>
+                    </>
+                  ) : (
+                    "Загрузка..."
+                  )}
+                </td>
+                <td>{calculatePortfolioPercentage(key)}%</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
 
